@@ -13,9 +13,6 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 
-
-// const mangoUrl = 'mongodb+srv://hemanthgadarla1999:root@cluster0.4snd9mw.mongodb.net/';
-
 const mangoUrl = "mongodb+srv://javeed:admin@cluster0.zxq7hav.mongodb.net/jobhunt";
 
 // Connect to MongoDB

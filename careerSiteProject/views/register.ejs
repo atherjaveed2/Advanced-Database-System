@@ -73,13 +73,24 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="role">Role</label>
-        <select class="form-control" name="role" required>
-          <option value="recruiter">Company</option>
+        <select class="form-control" name="role" id="roleSelect" required>
+          <option value="">Select Role</option>
+          <option value="recruiter">Recruiter</option>
+          <option value="company">Company</option>
           <option value="admin">Admin</option>
           <option value="candidate">Candidate</option>
         </select>
         <div class="error-message"></div>
-      </div>      
+      </div>
+
+      <div class="form-group" id="companyNameGroup" style="display: none;">
+        <label class="form-label" for="companyName">Company Name</label>
+        <input type="text" class="form-control" name="companyName" placeholder="Company Name" required>
+        <div class="error-message"></div>
+      </div>    
+      
+      
+
       <button class="btn btn-primary btn-block btn-register" type="submit">Register</button>
     </form>
   </div>
@@ -89,12 +100,29 @@
   <script>
     // Validate form inputs
     const form = document.querySelector('.form-register');
+
+    const roleSelect = document.getElementById('roleSelect');
+    const companyNameGroup = document.getElementById('companyNameGroup');
+    const companyNameInput = document.querySelector('[name="companyName"]');
+
+    roleSelect.addEventListener('change', () => {
+
+      if (roleSelect.value === 'company') {
+        companyNameGroup.style.display = 'block';
+        companyNameInput.required = true; // Make the field required
+      } else {
+        companyNameGroup.style.display = 'none';
+        companyNameInput.required = false; // Remove the required attribute
+      }
+    });
+
     form.addEventListener('submit', (event) => {
       const nameInput = form.querySelector('[name="name"]');
       const emailInput = form.querySelector('[name="email"]');
       const phoneInput = form.querySelector('[name="phoneNumber"]');
       const countryInput = form.querySelector('[name="country"]');
       const passwordInput = form.querySelector('[name="password"]');
+      const companyName = form.querySelector('[name="companyName"]')
 
       let isValid = true;
 
@@ -146,6 +174,14 @@
       } else {
         passwordInput.nextElementSibling.textContent = '';
       }
+      
+      // Validate Companyname
+      if (companyName.value === '') {
+        companyName.nextElementSibling.textContent = 'Please enter your company name';
+        isValid = false;
+      } else {
+        companyName.nextElementSibling.textContent = '';
+      } 
 
       if (!isValid) {
         event.preventDefault();

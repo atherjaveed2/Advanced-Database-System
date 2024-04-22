@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
+// Define Base Schema
+const baseSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -25,13 +26,14 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['recruiter', 'admin', 'candidate'],
+    enum: ['recruiter', 'admin', 'candidate', 'company'],
     default: 'candidate' // You can set the default role as needed
-  }
+  },
+  // Other fields common to all roles
 });
 
-// Hash password before saving to the database
-userSchema.pre('save', async function (next) {
+// Hash password before saving to the database for all roles
+baseSchema.pre('save', async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(this.password, salt);
@@ -42,15 +44,51 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-// Verify password
-userSchema.methods.verifyPassword = async function (password) {
-  try {
-    return await bcrypt.compare(password, this.password);
-  } catch (error) {
-    throw error;
-  }
+// Define Company Schema
+const companySchema = new mongoose.Schema({
+  companyName: {
+    type: String
+  },
+  adminApprovalStatus: {
+    type: Boolean,
+    default: false, // Default value for adminApprovalStatus
+  },
+  // Fields specific to company
+});
+
+// Define Recruiter Schema
+const recruiterSchema = new mongoose.Schema({
+  // Fields specific to recruiter
+});
+
+// Define Admin Schema
+const adminSchema = new mongoose.Schema({
+  // Fields specific to admin
+});
+
+// Define Candidate Schema
+const candidateSchema = new mongoose.Schema({
+  // Fields specific to candidate
+});
+
+// Apply base schema to all schemas
+const applyBaseSchema = (schema) => {
+  schema.add(baseSchema);
 };
 
-const User = mongoose.model('User', userSchema);
+// Apply base schema to all schemas
+applyBaseSchema(companySchema);
+applyBaseSchema(recruiterSchema);
+applyBaseSchema(adminSchema);
+applyBaseSchema(candidateSchema);
 
-module.exports = User;
+// Define models
+const Company = mongoose.model('Company', companySchema);
+const Recruiter = mongoose.model('Recruiter', recruiterSchema);
+const Admin = mongoose.model('Admin', adminSchema);
+const Candidate = mongoose.model('Candidate', candidateSchema);
+
+module.exports = { Company, Recruiter, Admin, Candidate };
+
+
+
