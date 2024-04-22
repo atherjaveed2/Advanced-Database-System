@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Career Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css" integrity="sha512-F7WyTLiiiPqvu2pGumDR15med0MDkUIo5VTVyyfECR5DZmCnDhti9q5VID02ItWjq6fvDfMaBaDl2J3WdL1uxA==" crossorigin="anonymous" />
+    <style>
+        .card-img-top {
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Career Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/job-postings">Job Postings</a>
+                      </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile/<%= user._id %>">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <% if (user) { %>
+                            <span class="nav-link">Logged in as: <%= user.email %></span>
+                        <% } else { %>
+                            <a class="nav-link" href="/auth/login">Login</a>
+                        <% } %>
+                    </li>
+                    <li class="nav-item">
+                        <% if (user) { %>
+                            <a class="nav-link" href="/auth/logout">Log Out</a>
+                        <% } %>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4 class="mb-4">Unlock Your Career Potential</h4>
+                    <p class="text-muted">Our career management portal is dedicated to helping you find the best job opportunities and advance in your career. Explore our platform to discover job listings, resources, and tools to make your career journey successful.</p>
+                
+                    <% if (user && user.role === 'recruiter') { %>
+                        <a href="/job-posting-form" class="btn btn-primary btn-sm">Post Job Openings</a>
+                        <a href="/applications" class="btn btn-primary btn-sm">View Applications</a>
+                    <% } else if (user && user.role === 'admin') { %>
+                        <a href="/explore-users" class="btn btn-primary btn-sm">Explore Users</a>
+                    <% } else { %>
+                        <a href="/job-postings" class="btn btn-primary btn-sm">Explore Job Opportunities</a>
+                    <% } %>
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <img src="/images/career.jpeg" class="img-fluid img-thumbnail" alt="Career Image" style="max-width: 75%; max-height: 75%;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="job-listings mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/google.webp" class="card-img-top" alt="Job Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Software Engineer</h5>
+                            <p class="card-text">Company: Tech Solutions Inc.</p>
+                            <p class="card-text">Salary: $80,000 - $100,000 per year</p>
+                            <p class="card-text">Location: New York, NY</p>
+                            <a href="/job-details" class="btn btn-primary">Job Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/salesforce.png" class="card-img-top" alt="Job Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Marketing Manager</h5>
+                            <p class="card-text">Company: Marketing Pro Inc.</p>
+                            <p class="card-text">Salary: $70,000 - $90,000 per year</p>
+                            <p class="card-text">Location: Los Angeles, CA</p>
+                            <a href="/job-details" class="btn btn-primary">Job Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/amazon.jpeg" class="card-img-top" alt="Job Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Data Analyst</h5>
+                            <p class="card-text">Company: Data Insights Co.</p>
+                            <p class="card-text">Salary: $65,000 - $80,000 per year</p>
+                            <p class="card-text">Location: San Francisco, CA</p>
+                            <a href="/job-details" class="btn btn-primary">Job Details</a>
+                        </div>
+                    </div>
+                </div>
+      
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2 class="mb-4">About Us</h2>
+                    <p class="text-muted">Our career management portal is committed to connecting talented professionals with the right job opportunities. We provide a platform where job seekers can explore job listings, access valuable resources, and advance their careers.</p>
+                    <p class="text-muted">Our mission is to help you achieve your career goals by providing access to a wide range of job opportunities and career development tools. We believe that your success is our success, and we're here to support your career journey every step of the way.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="/images/careerabout.jpeg"
+                        class="img-fluid" alt="About Us Image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2023 Your Career Portal</p>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-inline float-md-right mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-light">Privacy Policy</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-light">Terms of Use</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-light">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

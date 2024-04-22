@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css" integrity="sha512-F7WyTLiiiPqvu2pGumDR15med0MDkUIo5VTVyyfECR5DZmCnDhti9q5VID02ItWjq6fvDfMaBaDl2J3WdL1uxA==" crossorigin="anonymous" />
+</head>
+<body>
+    <!-- Navbar -->
+    <!-- Your Navbar code here -->
+
+    <div class="container">
+        <h2 class="text-center mb-4">Edit User</h2>
+        <form action="/update-user/<%= user._id %>" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+            </div>
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" value="<%= user.country %>" required>
+            </div>
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= user.phoneNumber %>" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="recruiter" <%= user.role === "recruiter" ? "selected" : "" %>>Company</option>
+                    <option value="admin" <%= user.role === "admin" ? "selected" : "" %>>Admin</option>
+                    <option value="candidate" <%= user.role === "candidate" ? "selected" : "" %>>Candidate</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap and JavaScript scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.min.js" integrity="sha384-X6n538b74zvtbo8qeDkKUnpR5Xv/KB5mld5vXa5adcu0t5SRVCc45z3bsU9q5aF6" crossorigin="anonymous"></script>
+</body>
+</html>

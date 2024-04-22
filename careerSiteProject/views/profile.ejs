@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Career Management Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .navbar-brand {
+      margin-left: auto;
+    }
+
+    .navbar-toggler-icon {
+      border: none;
+    }
+
+    .form-inline {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .container {
+      margin-top: 20px;
+    }
+
+    .profile-table {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      border: 1px solid #e1e4e8;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-table h2 {
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #333;
+    }
+
+    .profile-table th {
+      text-align: right;
+      width: 30%;
+      font-weight: 600;
+    }
+
+    .profile-table td {
+      text-align: left;
+    }
+
+    .profile-table .btn-logout {
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Career Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/<%= user._id %>">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <% if (user) { %>
+                        <span class="nav-link">Logged in as: <%= user.email %></span>
+                    <% } else { %>
+                        <a class="nav-link" href="/auth/login">Login</a>
+                    <% } %>
+                </li>
+                <li class="nav-item">
+                    <% if (user) { %>
+                        <a class="nav-link" href="/auth/logout">Log Out</a>
+                    <% } %>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="profile-table">
+          <h2>Personal Information</h2>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Name:</th>
+                <td><%= user.name %></td>
+              </tr>
+              <tr>
+                <th>Email:</th>
+                <td><%= user.email %></td>
+              </tr>
+              <tr>
+                <th>Country:</th>
+                <td><%= user.country %></td>
+              </tr>
+              <tr>
+                <th>Phone Number:</th>
+                <td><%= user.phoneNumber %></td>
+              </tr>
+              <tr>
+                <th>Role:</th>
+                <td><%= user.role %></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-right">
+            <a href="/profile/edit/<%=user._id%>" class="btn btn-primary">Edit</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</html>

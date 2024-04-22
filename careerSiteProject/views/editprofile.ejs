@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Career Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/job-postings">Job Postings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/<%= user._id %>">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <% if (user) { %>
+                        <span class="nav-link">Logged in as: <%= user.email %></span>
+                    <% } else { %>
+                        <a class="nav-link" href="/auth/login">Login</a>
+                    <% } %>
+                </li>
+                <li class="nav-item">
+                    <% if (user) { %>
+                        <a class="nav-link" href="/auth/logout">Log Out</a>
+                    <% } %>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+</nav>
+  <div class="container my-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h2>Edit Profile</h2>
+        <form action="/profile/edit/<%=user._id%>" method="POST">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" class="form-control" id="country" name="country" value="<%= user.country %>" required>
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= user.phoneNumber %>" required>
+          </div>
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select class="form-control" id="role" name="role" required>
+              <option value="recruiter" <%= user.role === 'recruiter' ? 'selected' : '' %>>Company</option>
+              <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+              <option value="candidate" <%= user.role === 'candidate' ? 'selected' : '' %>>Candidate</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
