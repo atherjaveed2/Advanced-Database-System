@@ -32,18 +32,6 @@ const baseSchema = new mongoose.Schema({
   // Other fields common to all roles
 });
 
-// Hash password before saving to the database for all roles
-baseSchema.pre('save', async function (next) {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
 // Define Company Schema
 const companySchema = new mongoose.Schema({
   company_id: {
@@ -68,7 +56,7 @@ companySchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(this.password, salt);
     this.password = hashedPassword;
-    next();
+    next();ddx
   } catch (error) {
     next(error);
   }

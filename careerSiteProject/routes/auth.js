@@ -1,4 +1,5 @@
 const express = require('express');
+const uuid = require('uuid');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const { Company, Recruiter, Admin, Candidate } = require('../models/User');
@@ -22,12 +23,29 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, { id: user.id, role: user.role }); // Serialize user ID and role
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (serializedUser, done) => {
   try {
-    const user = await Company.findById(id); // Deserialize based on the role
+    let User;
+    switch (serializedUser.role) {
+      case 'recruiter':
+        User = Recruiter;
+        break;
+      case 'admin':
+        User = Admin;
+        break;
+      case 'candidate':
+        User = Candidate;
+        break;
+      case 'company':
+        User = Company;
+        break;
+      default:
+        return done(new Error('Invalid user role'));
+    }
+    const user = await User.findById(serializedUser.id);
     done(null, user);
   } catch (error) {
     done(error);
@@ -60,7 +78,12 @@ router.post('/register', async (req, res, next) => {
         return res.render('error', { errorMessage: 'Invalid role specified' });
     }
 
-    const user = new User({ name, email, password, country, phoneNumber, role, companyName });
+    let company_id;
+    if (User === Company) {
+      company_id = uuid.v4(); // Generate a random UUID
+    }
+
+    const user = new User({ name, email, password, country, phoneNumber, role, companyName, company_id });
 
     await user.save();
     res.redirect('/auth/login');
@@ -69,19 +92,39 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
+
 router.get('/login', (req, res) => {
   res.render('login');
 });
 
 
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/auth/login',
-}), (req, res) => {
-  // This function will be executed when the login is successful
-  console.log("Javeed executed");
-  res.json({ success: true, message: 'Login successful' });
+// router.post('/login', passport.authenticate('local', {
+//   successRedirect: '/',
+//   failureRedirect: '/auth/login',
+// }), (req, res) => {
+//   // This function will be executed when the login is successful
+//   console.log("Javeed executed");
+//   res.json({ success: true, message: 'Login successful' });
+// });
+
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.render('error', { errorMessage: 'Invalid email or password' });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/');
+    });
+  })(req, res, next);
 });
+
+
 router.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) {
