@@ -60,11 +60,7 @@ router.post('/register', async (req, res, next) => {
         return res.render('error', { errorMessage: 'Invalid role specified' });
     }
 
-    console.log(User, "Hellooooooo dearrrrrr")
-
     const user = new User({ name, email, password, country, phoneNumber, role, companyName });
-
-
 
     await user.save();
     res.redirect('/auth/login');
@@ -77,14 +73,23 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
+
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/',
   failureRedirect: '/auth/login',
-}));
-
+}), (req, res) => {
+  // This function will be executed when the login is successful
+  console.log("Javeed executed");
+  res.json({ success: true, message: 'Login successful' });
+});
 router.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/auth/login');
+  req.logout((err) => {
+    if (err) {
+      // Handle error, if any
+      console.error(err);
+    }
+    res.redirect('/auth/login');
+  });
 });
 
 module.exports = router;

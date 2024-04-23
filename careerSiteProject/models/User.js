@@ -46,6 +46,11 @@ baseSchema.pre('save', async function (next) {
 
 // Define Company Schema
 const companySchema = new mongoose.Schema({
+  company_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   companyName: {
     type: String
   },
@@ -56,20 +61,107 @@ const companySchema = new mongoose.Schema({
   // Fields specific to company
 });
 
+
+// Hash password before saving to the database for Company schema
+companySchema.pre('save', async function (next) {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Verify password for Company schema
+companySchema.methods.verifyPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Define Recruiter Schema
 const recruiterSchema = new mongoose.Schema({
   // Fields specific to recruiter
 });
+
+// Hash password before saving to the database for Recruiter schema
+recruiterSchema.pre('save', async function (next) {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Verify password for Recruiter schema
+recruiterSchema.methods.verifyPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
 
 // Define Admin Schema
 const adminSchema = new mongoose.Schema({
   // Fields specific to admin
 });
 
+// Hash password before saving to the database for Admin schema
+adminSchema.pre('save', async function (next) {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Verify password for Admin schema
+adminSchema.methods.verifyPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 // Define Candidate Schema
 const candidateSchema = new mongoose.Schema({
   // Fields specific to candidate
 });
+
+// Hash password before saving to the database for Candidate schema
+candidateSchema.pre('save', async function (next) {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Verify password for Candidate schema
+candidateSchema.methods.verifyPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 // Apply base schema to all schemas
 const applyBaseSchema = (schema) => {
