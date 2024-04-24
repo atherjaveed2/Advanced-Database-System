@@ -57,7 +57,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 // Start the server
 app.listen(port, () => console.log('Server started on port 3000'));
