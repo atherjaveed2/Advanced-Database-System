@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const path= require('path');
+const fs=require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
 const User = require('../models/User');
@@ -75,7 +77,6 @@ router.post('/job-postings', async (req, res) => {
 });
 
 
-
 router.get('/job-posting-form/:id', async (req, res) => {
   const jobId = req.params.id;
 
@@ -136,7 +137,24 @@ router.patch('/edit/job-postings/:id', async (req, res) => {
   }
 });
 
+router.get('/download-resume/:filename', async (req, res) => {
+  try {
+    const filePath = path.join(__dirname,'..', 'uploads', req.params.filename); // Construct file path
 
+    res.setHeader('Content-Type', 'application/pdf'); // Set appropriate content type
+    res.setHeader('Content-Disposition', `attachment; filename="${req.params.filename}"`); // Set download headers
+
+    const fileStream = fs.createReadStream(filePath); // Read file stream
+    fileStream.pipe(res); // Stream the file content to the response
+    fileStream.on('error', (err) => {
+      console.error(err);
+      res.status(500).json({ message: 'Error downloading resume' });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving resume' });
+  }
+});
 
 router.get('/profile/:userId', async (req, res, next) => {
   try {

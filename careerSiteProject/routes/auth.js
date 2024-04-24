@@ -3,12 +3,51 @@ const uuid = require('uuid');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const { Company, Recruiter, Admin, Candidate } = require('../models/User');
-
 const router = express.Router();
+const multer = require('multer');
+const path=require('path');
+const fs=require('fs');
 
-passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+
+// Set up Multer middleware with disk storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Specify the destination directory
+  },
+  filename: function (req, file, cb) {
+    // Preserve the original filename and extension
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+// const upload = multer({ dest: 'uploads/' });
+
+passport.use(new LocalStrategy({ usernameField: 'email', passReqToCallback: true }, async (req, email, password, done) => {
+  const role = req.body.role; // Extract role from request body
+
   try {
-    const user = await Company.findOne({ email }); // Use the appropriate model based on role
+    let User;
+    switch (role.toLowerCase()) {
+      case 'company':
+        User = Company;
+        break;
+      case 'recruiter':
+        User = Recruiter;
+        break;
+      case 'admin':
+        User = Admin;
+        break;
+      case 'candidate':
+        User = Candidate;
+        break;
+      default:
+        console.log("Invalid role specified:", role);
+        return done(new Error('Invalid role specified'));
+    }
+
+    const user = await User.findOne({ email });
+
     if (!user) {
       return done(null, false);
     }
@@ -56,36 +95,36 @@ router.get('/register', (req, res) => {
   res.render('register');
 });
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', upload.single('resume'), async (req, res, next) => {
   try {
-    const { name, email, password, country, phoneNumber, role, companyName } = req.body;
-    let User; // Define the User variable to hold the appropriate model
-
-    switch (role) {
-      case 'recruiter':
-        User = Recruiter;
-        break;
+    const { name, email, password, country, phoneNumber, role } = req.body;
+    
+    switch (role.toLowerCase()) {
       case 'admin':
-        User = Admin;
-        break;
-      case 'candidate':
-        User = Candidate;
+        const admin = new Admin({ name, email, password, country, phoneNumber, role });
+        await admin.save();
         break;
       case 'company':
-        User = Company;
+        const { company_name, admin_approval_status } = req.body;
+        let company_id = uuid.v4();
+        const company = new Company({ name, email, password, country, phoneNumber, role, company_name, admin_approval_status, company_id });
+        await company.save();
+        break;
+      case 'recruiter':
+        const recruiter = new Recruiter({ name, email, password, country, phoneNumber, role });
+        await recruiter.save();
+        break;
+      case 'candidate':
+        const resumePath = req.file.path; // Path to the uploaded resume file
+        console.log("Resume uploaded at:", resumePath);
+        
+        const candidate = new Candidate({ name, email, password, country, phoneNumber, role, resume: resumePath });
+        await candidate.save();
         break;
       default:
         return res.render('error', { errorMessage: 'Invalid role specified' });
     }
 
-    let company_id;
-    if (User === Company) {
-      company_id = uuid.v4(); // Generate a random UUID
-    }
-
-    const user = new User({ name, email, password, country, phoneNumber, role, companyName, company_id });
-
-    await user.save();
     res.redirect('/auth/login');
   } catch (error) {
     next(error);
@@ -97,28 +136,22 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-
-// router.post('/login', passport.authenticate('local', {
-//   successRedirect: '/',
-//   failureRedirect: '/auth/login',
-// }), (req, res) => {
-//   // This function will be executed when the login is successful
-//   console.log("Javeed executed");
-//   res.json({ success: true, message: 'Login successful' });
-// });
-
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
+      console.error('Error during authentication:', err);
       return next(err);
     }
     if (!user) {
+      console.log('User not found');
       return res.render('error', { errorMessage: 'Invalid email or password' });
     }
     req.logIn(user, (err) => {
       if (err) {
+        console.error('Error during login:', err);
         return next(err);
       }
+      console.log('User logged in successfully:', user);
       return res.redirect('/');
     });
   })(req, res, next);
@@ -134,5 +167,6 @@ router.get('/logout', (req, res) => {
     res.redirect('/auth/login');
   });
 });
+
 
 module.exports = router;
