@@ -130,7 +130,6 @@
     });
 
     form.addEventListener('submit', (event) => {
-    console.log("Form submitted");
     const nameInput = form.querySelector('[name="name"]');
     const emailInput = form.querySelector('[name="email"]');
     const phoneInput = form.querySelector('[name="phoneNumber"]');
@@ -198,7 +197,6 @@
       }
 
       if (!isValid) {
-        console.log("Form submission prevented due to validation errors");
         event.preventDefault();
       }
    });

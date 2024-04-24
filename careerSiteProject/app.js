@@ -7,7 +7,6 @@ const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
-const multer = require('multer');
 
 
 // Import routes
@@ -61,5 +60,5 @@ app.use('/auth', authRouter);
 const port = process.env.PORT || 3001;
 
 // Start the server
-app.listen(port, () => console.log('Server started on port 3001'));
+app.listen(port, () => console.log('Server started on port 3000'));
 
