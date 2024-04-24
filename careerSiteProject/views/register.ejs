@@ -88,9 +88,9 @@
       
       <div class="form-group" id="companyNameGroup" style="display: none;">
         <label class="form-label" for="companyName">Company Name</label>
-        <input type="text" class="form-control" name="companyName" placeholder="Company Name" required>
+        <input type="text" class="form-control" name="companyName" placeholder="Company Name">
         <div class="error-message"></div>
-      </div>    
+      </div>  
       <button class="btn btn-primary btn-block btn-register" type="submit">Register</button>
     </form>
   </div>
@@ -129,18 +129,19 @@
 
     });
 
-    form.addEventListener('submit', (event) => {
-    const nameInput = form.querySelector('[name="name"]');
-    const emailInput = form.querySelector('[name="email"]');
-    const phoneInput = form.querySelector('[name="phoneNumber"]');
-    const countryInput = form.querySelector('[name="country"]');
-    const passwordInput = form.querySelector('[name="password"]');
-    const companyName = form.querySelector('[name="companyName"]');
+  form.addEventListener('submit', (event) => {
+  const nameInput = form.querySelector('[name="name"]');
+  const emailInput = form.querySelector('[name="email"]');
+  const phoneInput = form.querySelector('[name="phoneNumber"]');
+  const countryInput = form.querySelector('[name="country"]');
+  const passwordInput = form.querySelector('[name="password"]');
+  const companyName = form.querySelector('[name="companyName"]');
+  const resumeInput = form.querySelector('[name="resume"]');
 
-    let isValid = true;
+  let isValid = true;
 
-      // Validate name
-      if (nameInput.value === '') {
+    // Validate name
+    if (nameInput.value === '') {
         nameInput.nextElementSibling.textContent = 'Please enter your name';
         isValid = false;
       } else {
@@ -196,10 +197,18 @@
         companyName.nextElementSibling.textContent = '';
       }
 
-      if (!isValid) {
-        event.preventDefault();
-      }
-   });
+  // Validate resume (only for candidate role)
+  if (roleSelect.value === 'candidate' && resumeInput.value === '') {
+    resumeInput.nextElementSibling.textContent = 'Please upload your resume';
+    isValid = false;
+  } else {
+    resumeInput.nextElementSibling.textContent = '';
+  }
+
+  if (!isValid) {
+    event.preventDefault();
+  }
+});
     
     // Helper function to validate email address
     function isValidEmail(email) {
