@@ -13,6 +13,11 @@ const jobPostingSchema = new mongoose.Schema({
       type: String,
       required: true
   },
+  company_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   salary: {
     type: Number,
     required: true

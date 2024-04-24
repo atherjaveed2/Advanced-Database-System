@@ -64,7 +64,7 @@
                     <h4 class="mb-4">Unlock Your Career Potential</h4>
                     <p class="text-muted">Our career management portal is dedicated to helping you find the best job opportunities and advance in your career. Explore our platform to discover job listings, resources, and tools to make your career journey successful.</p>
                 
-                    <% if (user && user.role === 'recruiter') { %>
+                    <% if (user && user.role === 'company') { %>
                         <a href="/job-posting-form" class="btn btn-primary btn-sm">Post Job Openings</a>
                         <a href="/applications" class="btn btn-primary btn-sm">View Applications</a>
                     <% } else if (user && user.role === 'admin') { %>

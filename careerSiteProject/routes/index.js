@@ -62,6 +62,7 @@ router.post('/job-postings', async (req, res) => {
       title,
       description,
       company: company,
+      company_id: req.user.company_id,
       salary,
       location,
       requirements: requirements.split(',').map(req => req.trim()),
