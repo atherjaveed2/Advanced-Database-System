@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Companies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .company-info {
+            margin-bottom: 10px;
+        }
+        .company-info strong {
+            font-weight: bold;
+        }
+        .approve-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .approve-btn:hover {
+            background-color: #45a049;
+        }
+        .no-companies {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pending Companies</h1>
+        <% if (companies.length > 0) { %>
+            <ul>
+                <% companies.forEach(company => { %>
+                    <li>
+                        <div class="company-info">
+                            <strong>Name:</strong> <%= company.name %><br>
+                            <strong>Email:</strong> <%= company.email %><br>
+                            <!-- Add more company information as needed -->
+                        </div>
+                        <form action="/approve-company/<%= company.company_id %>" method="post">
+                            <button class="approve-btn" type="submit">Approve</button>
+                        </form>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p class="no-companies">No pending companies found.</p>
+        <% } %>
+    </div>
+</body>
+</html>
