@@ -12,6 +12,8 @@ const upload = multer({ storage: storage });
 const JobPosting = require('../models/JobPosting'); // Import your JobPosting model here
 const mongoose = require('mongoose');
 const Application = require('../models/application');
+const Company = require('../models/User').Company;
+
 
 const ensureAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -46,6 +48,45 @@ router.get('/', ensureAuthenticated,(req, res) => {
   router.get('/job-posting-form', (req, res) => {
   res.render('jobPostForm',{user : req.user}); 
  });
+
+// Server-side route to render pending companies page
+router.get('/pending-companies', async (req, res) => {
+  try {
+      // Find companies with adminApprovalStatus set to false
+      const pendingCompanies = await Company.find({ adminApprovalStatus: false });
+      res.render('pending-companies', { companies: pendingCompanies });
+  } catch (error) {
+      console.error('Error retrieving pending companies:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
+// Endpoint to handle company approval
+router.post('/approve-company/:companyId', async (req, res) => {
+  const companyId = req.params.companyId;
+
+  try {
+    // Update company's adminApprovalStatus to true
+    const updatedCompany = await Company.findOneAndUpdate(
+      { company_id: companyId },
+      { adminApprovalStatus: true },
+      { new: true } // To return the updated document
+    );
+
+    if (!updatedCompany) {
+      console.error('Company not found:', companyId);
+      return res.status(404).send('Company not found');
+    }
+
+    console.log('Company approved:', updatedCompany);
+    res.redirect('/pending-companies');
+  } catch (error) {
+    console.error('Error approving company:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
  
 // Handle the job posting upload
