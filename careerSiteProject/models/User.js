@@ -66,6 +66,7 @@ companySchema.pre('save', async function (next) {
 companySchema.methods.verifyPassword = async function (password) {
   try {
     return await bcrypt.compare(password, this.password);
+    
   } catch (error) {
     throw error;
   }
@@ -127,6 +128,9 @@ adminSchema.methods.verifyPassword = async function (password) {
 // Define Candidate Schema
 const candidateSchema = new mongoose.Schema({
   // Fields specific to candidate
+  resume: {
+    type: String,
+  }
 });
 
 // Hash password before saving to the database for Candidate schema
