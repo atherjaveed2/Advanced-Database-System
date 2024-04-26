@@ -61,6 +61,20 @@ router.get('/pending-companies', async (req, res) => {
   }
 });
 
+// Server-side route to render view applications page
+router.get('/viewapplications/:jobId', async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+    // Find applications related to the specified job ID
+    const viewApplications = await Application.find({ job_id: jobId }).populate("jobseeker_id");
+    // console.log(viewApplications," viewApplications ");
+    res.render('viewapplications', { applications: viewApplications });
+  } catch (error) {
+    console.error('Error retrieving view applications:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 // Endpoint to handle company approval
 router.post('/approve-company/:companyId', async (req, res) => {

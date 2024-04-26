@@ -37,7 +37,12 @@ const jobPostingSchema = new mongoose.Schema({
   postedAt: {
     type: Date,
     default: Date.now
+  },
+  recruiter_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
+
 });
 
 const JobPosting = mongoose.model('JobPosting', jobPostingSchema);

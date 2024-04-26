@@ -74,6 +74,8 @@
                     <% } else if (user && user.role === 'admin') { %>
                         <a href="/explore-users" class="btn btn-primary btn-sm">Explore Users</a>
                         <a href="/pending-companies" class="btn btn-primary btn-sm">Approve Companies</a>
+                    <% } else if (user && user.role === 'recruiter') { %>
+                        <a href="/job-postings" class="btn btn-primary btn-sm">View Job Postings</a>
                     <% } else { %>
                         <a href="/job-postings" class="btn btn-primary btn-sm">Explore Job Opportunities</a>
                     <% } %>

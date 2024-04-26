@@ -139,35 +139,63 @@
                     <tr>
                         <% for (let j = i; j < i + 3 && j < jobPostings.length; j++) { %>
                             <td>
-                                <div class="card mb-4" style="height: 100%;">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><%= jobPostings[j].title %></h5>
-                                        <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
-                                        <p class="card-text"><%= jobPostings[j].description %></p>
-                                        <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
-                                        <p class="card-text">Location: <%= jobPostings[j].location %></p>
-                                        <ul class="list-group">
-                                            <% jobPostings[j].requirements.forEach(requirement => { %>
-                                                <li class="list-group-item"><%= requirement %></li>
-                                            <% }); %>
-                                        </ul>
-                                        <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
-                                        <% if (user && user.role === 'candidate') { %>
-                                            <div class="job-buttons">
-                                              <!-- Inside your HTML file -->
-                                            <button class="apply-button" onclick="applyJob('<%= jobPostings[j]._id %>')">Apply</button>
+                              
+                                <% if(user && user.role === 'recruiter') { %>
+                                    <% if(user._id.equals(jobPostings[j].recruiter_id)) { %>
+                                        <div class="card mb-4" style="height: 100%;">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><%= jobPostings[j].title %></h5>
+                                                <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
+                                                <p class="card-text"><%= jobPostings[j].description %></p>
+                                                <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
+                                                <p class="card-text">Location: <%= jobPostings[j].location %></p>
+                                                <ul class="list-group">
+                                                    <% jobPostings[j].requirements.forEach(requirement => { %>
+                                                        <li class="list-group-item"><%= requirement %></li>
+                                                    <% }); %>
+                                                </ul>
+                                                <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
+                                                <div class="job-buttons">
+                                                    <!-- Inside your HTML file -->
+                                                    <a href="/viewapplications/<%= jobPostings[j]._id %>" class="btn btn-primary btn-sm">View Applications</a>
 
+                                                </div>
+                                                
                                             </div>
-                                          <% } else if (user) { %>
-                                            <div class="job-buttons">
-                                              <a class="edit-button" href="/job-posting-form/<%= jobPostings[j].id %>">Edit</a>
-                                              <form id="delete-form" onsubmit="deleteJobPosting('<%= jobPostings[j].id %>'); return false;">
-                                                <button class="delete-button" type="submit">Delete</button>
-                                              </form>
-                                            </div>
-                                          <% } %>
+                                        </div>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="card mb-4" style="height: 100%;">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><%= jobPostings[j].title %></h5>
+                                            <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
+                                            <p class="card-text"><%= jobPostings[j].description %></p>
+                                            <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
+                                            <p class="card-text">Location: <%= jobPostings[j].location %></p>
+                                            <ul class="list-group">
+                                                <% jobPostings[j].requirements.forEach(requirement => { %>
+                                                    <li class="list-group-item"><%= requirement %></li>
+                                                <% }); %>
+                                            </ul>
+                                            <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
+                                            <% if (user && user.role === 'candidate') { %>
+                                                <div class="job-buttons">
+                                                  <!-- Inside your HTML file -->
+                                                <button class="apply-button" onclick="applyJob('<%= jobPostings[j]._id %>')">Apply</button>
+    
+                                                </div>
+                                              <% } else if (user && user.role != 'recruiter') { %>
+                                                <div class="job-buttons">
+                                                  <a class="edit-button" href="/job-posting-form/<%= jobPostings[j].id %>">Edit</a>
+                                                  <form id="delete-form" onsubmit="deleteJobPosting('<%= jobPostings[j].id %>'); return false;">
+                                                    <button class="delete-button" type="submit">Delete</button>
+                                                  </form>
+                                                </div>
+                                              <% } %>
+                                        </div>
                                     </div>
-                                </div>
+                                <% } %>
+                               
                             </td>
                         <% } %>
                     </tr>
