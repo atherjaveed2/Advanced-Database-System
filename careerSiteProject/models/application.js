@@ -2,15 +2,25 @@
 const mongoose = require('mongoose');
 
 const applicationSchema = new mongoose.Schema({
-  jobPosting: {
+  job_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'JobPosting',
     required: true,
   },
-  user: {
+  jobseeker_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Candidate',
     required: true,
+  },
+  application_status: {
+    type: String,
+    enum: ['pending', 'in progress', 'closed'],
+    required: true
+  },
+  placement_status: {
+    type: String,
+    enum: ['selected', 'rejected',"in progress"],
+    required: true
   },
   applicationDate: {
     type: Date,
