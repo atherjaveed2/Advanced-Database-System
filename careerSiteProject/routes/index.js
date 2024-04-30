@@ -37,15 +37,15 @@ router.get('/', ensureAuthenticated,(req, res) => {
     res.redirect('/');
   });
 
-  router.get('/job-postings', async (req, res) => {
-    try {
-      const jobPostings = await JobPosting.find({}).exec();
-      res.render('jobpostings', { jobPostings, user: req.user }); 
-    } catch (err) {
-      console.error(err);
-      res.render('error', { errorMessage: 'An error occurred while fetching job postings.' });
-    }
-  });
+  // router.get('/job-postings', async (req, res) => {
+  //   try {
+  //     const jobPostings = await JobPosting.find({}).exec();
+  //     res.render('jobpostings', { jobPostings, user: req.user }); 
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.render('error', { errorMessage: 'An error occurred while fetching job postings.' });
+  //   }
+  // });
 
   router.get('/job-posting-form', (req, res) => {
   res.render('jobPostForm',{user : req.user}); 
@@ -60,6 +60,19 @@ router.get('/pending-companies', async (req, res) => {
   } catch (error) {
       console.error('Error retrieving pending companies:', error);
       res.status(500).send('Internal Server Error');
+  }
+});
+
+
+router.get('/viewapplications/:jobId', async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+    // Find applications related to the specified job ID
+    const viewApplications = await Application.find({ job_id: jobId }).populate("jobseeker_id");
+    res.render('viewapplications', { applications: viewApplications, jobId:jobId});
+  } catch (error) {
+    console.error('Error retrieving view applications:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
@@ -106,6 +119,7 @@ router.get('/recruiters', async (req, res) => {
  
 // Handle the job posting upload
 router.post('/job-postings', async (req, res) => {
+  console.log("heroooooo")
   const { title, description, company, salary, location, requirements, recruiterList} = req.body;
 
   // Check if the user is authenticated
@@ -312,21 +326,26 @@ router.post('/profile/delete/:userId', (req, res) => {
 // Route to get a list of job postings
 router.get('/job-postings', async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-
-    const skip = (page - 1) * limit;
-
-    const jobPostings = await JobPosting.find()
-      .skip(skip)
-      .limit(limit)
-      .exec();
-
-    res.json(jobPostings);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    const user = req.user;
+    let jobPostings = [];
+    if(user.role == "jobseeker"){
+        jobPostings = await JobPosting.find();
+    }else if(user.role == "recruiter"){
+        jobPostings = await JobPosting.find({recruiter_id:user.recruiter_id});
+    }else{
+      jobPostings = await JobPosting.find({company_id:user.company_id});
+    }
+    const applications = await Application.find({jobseeker_id:req.user.id});
+    console.log(applications," app ");
+    res.render('jobpostings', { jobPostings, applications, user: req.user }); 
+  } catch (err) {
+    console.error(err);
+    res.render('error', { errorMessage: 'An error occurred while fetching job postings.' });
   }
+});
+
+router.get('/job-posting-form', (req, res) => {
+res.render('jobPostForm',{user : req.user}); 
 });
 
 router.put('/job-postings/:id', async (req, res) => {
@@ -399,22 +418,60 @@ router.post('/delete-user/:userId', async (req, res) => {
 });
 
 
-// Apply for a job posting
 router.post('/apply/:jobId', async (req, res) => {
   try {
+    // Assuming you have user authentication middleware and userId is available in req.user._id
+    const userId = req.user._id; 
     const { jobId } = req.params;
-    const userId = req.user._id; // Assuming you have user authentication middleware
 
+    // Retrieve additional data from request body or wherever available
+    const { application_status, placement_status } = req.body;
+
+    // Create a new application instance with the provided data
     const application = new Application({
-      jobPosting: jobId,
-      user: userId,
+      job_id: jobId,
+      jobseeker_id: userId,
+      placement_status: placement_status || 'in progress', // Default to 'pending' if not provided
+      application_status: application_status || 'in progress', // Default to 'in progress' if not provided
     });
-
+    // Save the application to the database
     await application.save();
-
-    res.redirect('/applications');
+    res.redirect('/job-postings');
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: 'An error occurred while applying for the job posting.' });
+  }
+});
+
+// Retrieve job applications made by the recruiter
+// Assuming you have a "role" field in your user schema, and you set the user's role during authentication
+router.get('/applications/:jobId', async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const applications = await Application.find({ job_id: jobId });
+    res.render("applications");
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while retrieving job applications.' });
+  }
+});
+
+router.post('/applications/:jobId', async (req, res) => {
+  try {
+    const { selectedApplication } = req.body;
+    const { jobId } = req.params;
+    const applications = await Application.find({job_id:jobId});
+    for (let application of applications) {
+      if (String(selectedApplication) === String(application._id)) {
+        application.placement_status = "selected";
+      } else {
+        application.placement_status = "rejected";
+      }
+      application.application_status = "closed";
+      await application.save(); // Save each updated application
+    }
+    res.redirect("/");
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while retrieving job applications.' });
   }
 });
 
