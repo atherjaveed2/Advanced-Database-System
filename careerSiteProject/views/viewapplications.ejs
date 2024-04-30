@@ -31,47 +31,123 @@
             color: #fff;
             border-color: #dee2e6;
         }
+
+        /* Tabs styles */
+        .nav-tabs .nav-link.active {
+            background-color: #dee2e6;
+            border-bottom-color: #fff;
+        }
+
+        .nav-tabs .nav-link {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Applications</h2>
-        <% if (applications.length === 0) { %>
-            <div class="alert alert-info" role="alert">
-                No applications found.
-            </div>
-        <% } else { %>
-            <form id="applicationSelectionForm" method="POST" action="/applications/<%= jobId %>">  <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Select</th>
-                                <th>Application ID</th>
-                                <th>Jobseeker</th>
-                                <th>Email</th>
-                                <th>Contact</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                            <% applications.forEach(application => { %>
-                                <tr>
-                                    <td>
-                                        <input type="radio" name="selectedApplication" value="<%= application._id %>">
-                                    </td>
-                                    <td><%= application._id %></td>
-                                    <td><%= application.jobseeker_id.name %></td>
-                                    <td><%= application.jobseeker_id.email %></td>
-                                    <td><%= application.jobseeker_id.phoneNumber %></td>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="applied-tab" data-bs-toggle="tab" href="#applied" role="tab" aria-controls="applied" aria-selected="true">Applied</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="shortlisted-tab" data-bs-toggle="tab" href="#shortlisted" role="tab" aria-controls="shortlisted" aria-selected="false">Shortlisted</a>
+            </li>
+        </ul>
+        
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="applied" role="tabpanel" aria-labelledby="applied-tab">
+                <% if (applications.length === 0) { %>
+                    <div class="alert alert-info" role="alert">
+                        No applied applications found.
+                    </div>
+                <% } else { %>
+                    <form id="appliedSelectionForm" method="POST" action="/shortlist/candidates/%>">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Application ID</th>
+                                        <th>Jobseeker</th>
+                                        <th>Email</th>
+                                        <th>Contact</th>
                                     </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-                <button type="submit" class="btn btn-primary">Select Candidate</button>
-            </form>
-        <% } %>
+                                </thead>
+                                <tbody>
+                                    <% applications.forEach(application => {
+                                        if (application.application_status == "in progress") { %>  <tr>
+                                                <td>
+                                                    <input type="checkbox" name="selectedApplications[]" value="<%= application._id %>">
+                                                </td>
+                                                <td><%= application._id %></td>
+                                                <td><%= application.jobseeker_id.name %></td>
+                                                <td><%= application.jobseeker_id.email %></td>
+                                                <td><%= application.jobseeker_id.phoneNumber %></td>
+                                            </tr>
+                                        <% }
+                                    }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Shortlist Candidate</button>
+                    </form>
+                <% } %>
+            </div>
+            <div class="tab-pane fade" id="shortlisted" role="tabpanel" aria-labelledby="shortlisted-tab">
+                <% if (applications.length === 0) { %>
+                    <div class="alert alert-info" role="alert">
+                        No shortlisted applications found.
+                    </div>
+                <% } else { %>
+                    <form id="appliedSelectionForm" method="POST" action="/select/candidate/<%= jobId %>">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Application ID</th>
+                                        <th>Jobseeker</th>
+                                        <th>Email</th>
+                                        <th>Contact</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                    <% applications.forEach(application => {
+                                        if (application.application_status == "in review") { %> 
+                                        <tr>
+                                            <td>
+                                                <input type="radio" name="selectedApplication" value="<%= application._id %>">
+                                            </td>
+                                            <td><%= application._id %></td>
+                                            <td><%= application.jobseeker_id.name %></td>
+                                            <td><%= application.jobseeker_id.email %></td>
+                                            <td><%= application.jobseeker_id.phoneNumber %></td>
+                                            </tr>
+                                        <% }
+                                    }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                      <button type="submit" class="btn btn-primary">Select Candidate</button>
+                   </form>
+                 <% } %>
+            </div>
+        </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.bundle.min.js">
+    </script>
+    <script>
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+      
+        // Activate Bootstrap tabs
+        document.addEventListener('DOMContentLoaded', function () {
+          var tab = new bootstrap.Tab(document.querySelector('.nav-tabs .active'))
+          tab.show()
+        })
+    </script>
 </body>
 </html>

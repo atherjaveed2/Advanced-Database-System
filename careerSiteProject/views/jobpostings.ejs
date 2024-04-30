@@ -159,8 +159,10 @@
                                                   <% if (appliedApplication) { %>
                                                       <% if (appliedApplication.application_status == "in progress") { %>
                                                         <button class="apply-button">Applied</button>
+                                                      <% } else if (appliedApplication.placement_status == 'selected') { %>
+                                                        <button class="apply-button">Selected</button>
                                                       <% } else { %>
-                                                        <button class="apply-button">Closed</button>
+                                                        <button class="apply-button">Rejected</button>
                                                       <% } %>
                                                   <% } else { %>
                                                     <form method="POST" action="/apply/<%= jobPostings[j]._id %>">
