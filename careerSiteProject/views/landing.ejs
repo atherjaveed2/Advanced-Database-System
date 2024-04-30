@@ -67,7 +67,6 @@
                     <% if (user && user.role === 'company') { %>
                         <% if (user.adminApprovalStatus == true) { %>
                         <a href="/job-posting-form" class="btn btn-primary btn-sm">Post Job Openings</a>
-                        <a href="/applications" class="btn btn-primary btn-sm">View Applications</a>
                         <% } else { %>
                             <p>Your company is pending approval from the admin.</p>
                         <% } %>

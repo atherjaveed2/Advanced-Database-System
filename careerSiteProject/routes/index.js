@@ -72,7 +72,7 @@ router.get('/viewapplications/:jobId', async (req, res) => {
     res.render('viewapplications', { applications: viewApplications, jobId:jobId});
   } catch (error) {
     console.error('Error retrieving view applications:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send('Internal Server Errors');
   }
 });
 
@@ -149,6 +149,39 @@ router.post('/job-postings', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'An error occurred while uploading the job posting.' });
+  }
+});
+
+
+router.post("/shortlist/candidates/", async (req, res) => {
+  const selectedApplications = req.body['selectedApplications[]']; // Get the selected application(s)
+  const newStatus = "in review"; // Replace with your desired status
+
+  try {
+    // Handle single and multiple selections efficiently
+    const applicationIds = selectedApplications instanceof Array ? selectedApplications : [selectedApplications]; // Coerce to array if necessary
+
+    const updatedApplications = await Application.updateMany({
+      _id: { $in: applicationIds }, // Efficient filtering for all cases
+    }, {
+      $set: { application_status: newStatus },
+    });
+
+    console.log(" Shortlisted applications count:", updatedApplications.modifiedCount);
+
+    if (updatedApplications.modifiedCount === 0) {
+      // Informative message for no updates
+      return res.json({ message: "No applications were shortlisted." });
+    } else {
+      // Success message for single or multiple updates
+      const message = updatedApplications.modifiedCount === 1
+        ? "Application shortlisted successfully!"
+        : `${updatedApplications.modifiedCount} applications shortlisted successfully!`;
+      return res.json({ message });
+    }
+  } catch (error) {
+    console.error("Error shortlisting applications:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -455,23 +488,24 @@ router.get('/applications/:jobId', async (req, res) => {
   }
 });
 
-router.post('/applications/:jobId', async (req, res) => {
+router.post('/select/candidate/:jobId', async (req, res) => {
+  const { selectedApplication } = req.body; // Assuming selectedApplication ID is sent from the client
+  const  jobId= req.params.jobId;
   try {
-    const { selectedApplication } = req.body;
-    const { jobId } = req.params;
-    const applications = await Application.find({job_id:jobId});
-    for (let application of applications) {
-      if (String(selectedApplication) === String(application._id)) {
-        application.placement_status = "selected";
-      } else {
-        application.placement_status = "rejected";
-      }
-      application.application_status = "closed";
-      await application.save(); // Save each updated application
+    // Update all applications to "closed"
+    await Application.updateMany({job_id:jobId}, { $set: { application_status: "closed" } });
+    await Application.updateMany({job_id:jobId}, { $set: { placement_status: "rejected" } });
+
+    // Update selected application to "placement_status: selected" (assuming it's a separate field)
+    if (selectedApplication) {
+      await Application.findByIdAndUpdate(selectedApplication, { $set: { placement_status: "selected" } })
+    } else {
+      console.warn("No selected application ID provided");
     }
     res.redirect("/");
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while retrieving job applications.' });
+    console.error("Error updating applications:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
