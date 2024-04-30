@@ -2,7 +2,7 @@ const express = require('express');
 const uuid = require('uuid');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const { Company, Recruiter, Admin, Candidate } = require('../models/User');
+const { Company, Recruiter, Admin, Jobseeker } = require('../models/User');
 const router = express.Router();
 const multer = require('multer');
 const path=require('path');
@@ -38,8 +38,8 @@ passport.use(new LocalStrategy({ usernameField: 'email', passReqToCallback: true
       case 'admin':
         User = Admin;
         break;
-      case 'candidate':
-        User = Candidate;
+      case 'jobseeker':
+        User = Jobseeker;
         break;
       default:
         console.log("Invalid role specified:", role);
@@ -75,8 +75,8 @@ passport.deserializeUser(async (serializedUser, done) => {
       case 'admin':
         User = Admin;
         break;
-      case 'candidate':
-        User = Candidate;
+      case 'jobseeker':
+        User = Jobseeker;
         break;
       case 'company':
         User = Company;
@@ -115,12 +115,12 @@ router.post('/register', upload.single('resume'), async (req, res, next) => {
         const recruiter = new Recruiter({ name, email, password, country, phoneNumber, role, skills, recruiter_id });
         await recruiter.save();
         break;
-      case 'candidate':
+      case 'jobseeker':
         const resumePath = req.file.path; // Path to the uploaded resume file
         console.log("Resume uploaded at:", resumePath);
-        
-        const candidate = new Candidate({ name, email, password, country, phoneNumber, role, resume: resumePath });
-        await candidate.save();
+        let jobseeker_id = uuid.v4();
+        const jobseeker = new Jobseeker({ name, email, password, country, phoneNumber, role, resume: resumePath, jobseeker_id });
+        await jobseeker.save();
         break;
       default:
         return res.render('error', { errorMessage: 'Invalid role specified' });

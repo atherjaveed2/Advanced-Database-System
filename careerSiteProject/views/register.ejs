@@ -76,7 +76,7 @@
         <select class="form-control" name="role" id="roleSelect" required>
           <option value="">Select Role</option>
           <option value="recruiter">Recruiter</option>
-          <option value="candidate">Candidate</option>
+          <option value="jobseeker">Jobseeker</option>
           <option value="company">Company</option>
         </select>
         <div class="error-message"></div>
@@ -160,7 +160,7 @@
         // companyNameInput.required = false; // Remove the required attribute
       }
 
-      if (roleSelect.value === 'candidate') {
+      if (roleSelect.value === 'jobseeker') {
         resumeFile.style.display = 'block'; // Display the parent container
         resumeInput.required = true; // Make the field required
       } else {
@@ -239,8 +239,8 @@
       }
 
 
-    // Validate resume (only for candidate role)
-    if (roleSelect.value === 'candidate' && resumeInput.value === '') {
+    // Validate resume (only for jobseeker role)
+    if (roleSelect.value === 'jobseeker' && resumeInput.value === '') {
       resumeInput.nextElementSibling.textContent = 'Please upload your resume';
       isValid = false;
     } 

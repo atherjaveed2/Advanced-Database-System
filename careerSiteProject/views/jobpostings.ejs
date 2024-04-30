@@ -178,7 +178,7 @@
                                                 <% }); %>
                                             </ul>
                                             <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
-                                            <% if (user && user.role === 'candidate') { %>
+                                            <% if (user && user.role === 'jobseeker') { %>
                                                 <div class="job-buttons">
                                                   <!-- Inside your HTML file -->
                                                 <button class="apply-button" onclick="applyJob('<%= jobPostings[j]._id %>')">Apply</button>

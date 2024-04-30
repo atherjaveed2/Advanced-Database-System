@@ -26,8 +26,8 @@ const baseSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['recruiter', 'admin', 'candidate', 'company'],
-    default: 'candidate' // You can set the default role as needed
+    enum: ['recruiter', 'admin', 'jobseeker', 'company'],
+    default: 'JobseekerSchema' // You can set the default role as needed
   },
   // Other fields common to all roles
 });
@@ -133,16 +133,19 @@ adminSchema.methods.verifyPassword = async function (password) {
 };
 
 
-// Define Candidate Schema
-const candidateSchema = new mongoose.Schema({
-  // Fields specific to candidate
+// Define Jobseeker Schema
+const JobseekerSchema = new mongoose.Schema({
+  // Fields specific to Jobseeker
   resume: {
     type: String,
-  }
+  },
+  jobseeker_id: {
+    type: String,
+  },
 });
 
-// Hash password before saving to the database for Candidate schema
-candidateSchema.pre('save', async function (next) {
+// Hash password before saving to the database for Jobseeker schema
+JobseekerSchema.pre('save', async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(this.password, salt);
@@ -153,8 +156,8 @@ candidateSchema.pre('save', async function (next) {
   }
 });
 
-// Verify password for Candidate schema
-candidateSchema.methods.verifyPassword = async function (password) {
+// Verify password for Jobseeker schema
+JobseekerSchema.methods.verifyPassword = async function (password) {
   try {
     return await bcrypt.compare(password, this.password);
   } catch (error) {
@@ -172,15 +175,15 @@ const applyBaseSchema = (schema) => {
 applyBaseSchema(companySchema);
 applyBaseSchema(recruiterSchema);
 applyBaseSchema(adminSchema);
-applyBaseSchema(candidateSchema);
+applyBaseSchema(JobseekerSchema);
 
 // Define models
 const Company = mongoose.model('Company', companySchema);
 const Recruiter = mongoose.model('Recruiter', recruiterSchema);
 const Admin = mongoose.model('Admin', adminSchema);
-const Candidate = mongoose.model('Candidate', candidateSchema);
+const Jobseeker = mongoose.model('Jobseeker', JobseekerSchema);
 
-module.exports = { Company, Recruiter, Admin, Candidate };
+module.exports = { Company, Recruiter, Admin, Jobseeker };
 
 
 

@@ -74,7 +74,7 @@
             <select class="form-control" id="role" name="role" required>
               <option value="recruiter" <%= user.role === 'recruiter' ? 'selected' : '' %>>Company</option>
               <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
-              <option value="candidate" <%= user.role === 'candidate' ? 'selected' : '' %>>Candidate</option>
+              <option value="jobseeker" <%= user.role === 'jobseeker' ? 'selected' : '' %>>Jobseeker</option>
             </select>
           </div>
           <button type="submit" class="btn btn-primary">Update Profile</button>
