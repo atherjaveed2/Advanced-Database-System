@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const ejs = require('ejs');
 const methodOverride = require('method-override');
 const path = require('path');
 const session = require('express-session');
@@ -28,24 +29,21 @@ app.use(session({
     saveUninitialized: true
   }));
 
-
+  
 
 // Set up middleware
 // Initialize Passport and sessions
 app.use(flash())
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(flash());
 // Add body parsing middleware
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
 
 
 
