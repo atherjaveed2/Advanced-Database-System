@@ -74,6 +74,7 @@
       <div class="form-group">
         <label class="form-label" for="role">Role</label>
         <select class="form-control" name="role" id="roleSelect" required>
+          <option value="">Select Role</option>
           <option value="recruiter">Recruiter</option>
           <option value="candidate">Candidate</option>
           <option value="company">Company</option>
@@ -91,6 +92,16 @@
         <input type="text" class="form-control" name="companyName" placeholder="Company Name">
         <div class="error-message"></div>
       </div>  
+
+      <div class="form-group" id="skillsGroup" style="display: none;">
+        <label class="form-label" for="skills">Skills</label>
+        <input type="text" class="form-control" id="skillsInput" name="skills"  placeholder="Enter skills separated by commas">
+        <button type="button" class="btn btn-primary" id="addSkillsBtn">Add Skills</button>
+        <div  class="error-message" id="skillsList"></div>
+      </div>
+
+      <input type="hidden" id="hiddenSkillsInput" name="skills" value="">
+      
       <button class="btn btn-primary btn-block btn-register" type="submit">Register</button>
     </form>
   </div>
@@ -109,6 +120,36 @@
     const resumeInput = document.querySelector('[name="resume]');
 
 
+    const addSkillsBtn = document.getElementById('addSkillsBtn');
+    const skillsInput = document.getElementById('skillsInput');
+    const skillsList = document.getElementById('skillsList');
+    const skillsGroup = document.getElementById('skillsGroup');
+
+    roleSelect.addEventListener('change', () => {
+      if (roleSelect.value === 'recruiter') {
+        skillsGroup.style.display = 'block';
+      } else {
+        skillsGroup.style.display = 'none';
+      }
+    });
+
+    addSkillsBtn.addEventListener('click', () => {
+    const skills = skillsInput.value.split(',').map(skill => skill.trim());
+    skills.forEach(skill => {
+      if (skill !== '') {
+        const skillBadge = document.createElement('span');
+        skillBadge.classList.add('badge', 'badge-secondary');
+        skillBadge.textContent = skill;
+        skillsList.appendChild(skillBadge);
+      }
+       });
+
+    // // Clear input field
+    // skillsInput.value = '';
+      });
+
+
+
     roleSelect.addEventListener('change', () => {
 
       if (roleSelect.value === 'company') {
@@ -116,7 +157,7 @@
         companyNameInput.required = true; // Make the field required
       } else {
         companyNameGroup.style.display = 'none';
-        companyNameInput.required = false; // Remove the required attribute
+        // companyNameInput.required = false; // Remove the required attribute
       }
 
       if (roleSelect.value === 'candidate') {
@@ -124,7 +165,7 @@
         resumeInput.required = true; // Make the field required
       } else {
         resumeFile.style.display = 'none'; // Hide the parent container
-        resumeInput.required = false; // Remove the required attribute
+        // resumeInput.required = false; // Remove the required attribute
       }
 
     });
@@ -190,19 +231,36 @@
       }
       
       // Validate Companyname
-      if (companyName.value === '') {
+      if (roleSelect.value === 'company' && companyName.value === '') {
         companyName.nextElementSibling.textContent = 'Please enter your company name';
         isValid = false;
       } else {
         companyName.nextElementSibling.textContent = '';
       }
 
-  // Validate resume (only for candidate role)
-  if (roleSelect.value === 'candidate' && resumeInput.value === '') {
-    resumeInput.nextElementSibling.textContent = 'Please upload your resume';
-    isValid = false;
-  } else {
-    resumeInput.nextElementSibling.textContent = '';
+
+    // Validate resume (only for candidate role)
+    if (roleSelect.value === 'candidate' && resumeInput.value === '') {
+      resumeInput.nextElementSibling.textContent = 'Please upload your resume';
+      isValid = false;
+    } 
+
+      // Validate skills
+      if (roleSelect.value === 'recruiter') {
+
+      const skills = skillsInput.value.split(',').map(skill => skill.trim()).filter(skill => skill !== ''); // Filter out empty skills
+
+      const skillsString = skills.join(','); // Join skills into a comma-separated string
+
+      if (skillsString === '') {
+          document.getElementById('skillsList').textContent = 'Please enter at least one skill';
+      isValid = false;
+          event.preventDefault(); // Prevent form submission
+      } else {
+          document.getElementById('skillsList').textContent = '';
+          // Update hidden input value with skills
+          document.getElementById('hiddenSkillsInput').value = skillsString;
+      }
   }
 
   if (!isValid) {

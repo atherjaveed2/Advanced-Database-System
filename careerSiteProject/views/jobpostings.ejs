@@ -141,7 +141,7 @@
                             <td>
                               
                                 <% if(user && user.role === 'recruiter') { %>
-                                    <% if(user._id.equals(jobPostings[j].recruiter_id)) { %>
+                                    <% if(user.recruiter_id===jobPostings[j].recruiter_id) { %>
                                         <div class="card mb-4" style="height: 100%;">
                                             <div class="card-body">
                                                 <h5 class="card-title"><%= jobPostings[j].title %></h5>

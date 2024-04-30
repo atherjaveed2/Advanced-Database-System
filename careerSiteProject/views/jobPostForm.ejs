@@ -127,10 +127,72 @@
           <label for="requirements">Requirements (comma-separated):</label>
           <input type="text" class="form-control" id="requirements" name="requirements">
         </div>
+        <button type="button" class="btn btn-primary" id="selectRecruiterBtn">Select Recruiter</button>
+
+
+        <div class="form-group" id="recruiterListContainer" style="display: none;">
+          <label for="recruiters">Select Recruiter:</label>
+          <select class="form-control" id="recruiters">
+            <!-- Recruiters will be populated here -->
+          </select>
+        </div>
+
+        <input type="hidden" id="recruiterId" name="recruiterId">
+      
         <button type="submit" class="btn btn-primary">Upload Job Posting</button>
       </form>
-    </div>
+       </div>
 
-  </div>
+    </div>
+    <script>
+      async function getRecruiters() {
+        try {
+          const response = await fetch(`/recruiters`, {
+            method: 'GET',
+          });
+          if (response.status === 200) {
+            const data = await response.json();
+            const recruiterSelect = document.getElementById('recruiters');
+            recruiterSelect.innerHTML = ''; // Clear previous options
+            data.forEach(recruiter => {
+              const option = document.createElement('option');
+              option.value = recruiter.name;
+              option.setAttribute('data-recruiter-id', recruiter.recruiter_id);
+              option.textContent = recruiter.name;
+              recruiterSelect.appendChild(option);
+            })
+            document.getElementById('recruiterListContainer').style.display = 'block';
+          } else {
+            alert('An error occurred while retrieving recruiters.');
+          }
+        } catch (err) {
+          console.error('Error:', err);
+          alert('An error occurred while retrieving recruiters.');
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        const selectRecruiterBtn = document.getElementById('selectRecruiterBtn');
+        selectRecruiterBtn.addEventListener('click', getRecruiters);
+      });
+
+
+      const form = document.querySelector('form');
+form.addEventListener('submit', () => {
+  const selectedOption = document.getElementById('recruiters').querySelector('option:checked');
+  const selectedRecruiterId = selectedOption.getAttribute('data-recruiter-id');
+  document.getElementById('recruiterId').value = selectedRecruiterId;
+});
+
+  // // Handle form submission
+  // const form = document.querySelector('form');
+  //   form.addEventListener('submit', () => {
+  //     const selectedRecruiterId = document.getElementById('recruiters').value;
+  //     document.getElementById('recruiterId').value = selectedRecruiterId;
+      
+  //   });
+
+    </script>
+
 </body>
 </html>

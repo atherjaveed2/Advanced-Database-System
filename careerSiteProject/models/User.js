@@ -36,8 +36,7 @@ const baseSchema = new mongoose.Schema({
 const companySchema = new mongoose.Schema({
   company_id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   companyName: {
     type: String
@@ -74,8 +73,17 @@ companySchema.methods.verifyPassword = async function (password) {
 
 // Define Recruiter Schema
 const recruiterSchema = new mongoose.Schema({
-  // Fields specific to recruiter
+  // Field specific to recruiter
+  skills: {
+    type: [String] // Store skills as a single string
+  },
+  recruiter_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
 });
+
 
 // Hash password before saving to the database for Recruiter schema
 recruiterSchema.pre('save', async function (next) {

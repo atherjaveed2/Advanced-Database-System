@@ -13,6 +13,8 @@ const JobPosting = require('../models/JobPosting'); // Import your JobPosting mo
 const mongoose = require('mongoose');
 const Application = require('../models/application');
 const Company = require('../models/User').Company;
+const uuid = require('uuid');
+
 
 
 const ensureAuthenticated = (req, res, next) => {
@@ -61,20 +63,6 @@ router.get('/pending-companies', async (req, res) => {
   }
 });
 
-// Server-side route to render view applications page
-router.get('/viewapplications/:jobId', async (req, res) => {
-  try {
-    const jobId = req.params.jobId;
-    // Find applications related to the specified job ID
-    const viewApplications = await Application.find({ job_id: jobId }).populate("jobseeker_id");
-    // console.log(viewApplications," viewApplications ");
-    res.render('viewapplications', { applications: viewApplications });
-  } catch (error) {
-    console.error('Error retrieving view applications:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
 
 // Endpoint to handle company approval
 router.post('/approve-company/:companyId', async (req, res) => {
@@ -101,11 +89,24 @@ router.post('/approve-company/:companyId', async (req, res) => {
   }
 });
 
+// Define a route to get all recruiters
+router.get('/recruiters', async (req, res) => {
+  try {
+    // Assuming you have a Recruiter model
+    const recruiters = await User.Recruiter.find();
+    console.log(recruiters, "jabillliiiii")
+    res.json(recruiters);
+    // res.render('jobPostForm', {user : [],'recruiters':recruiters }); // Render the 'recruiters.ejs' template and pass the recruiters data to it
+  } catch (error) {
+    console.error('Error retrieving recruiters:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
  
 // Handle the job posting upload
 router.post('/job-postings', async (req, res) => {
-  const { title, description, company, salary, location, requirements} = req.body;
+  const { title, description, company, salary, location, requirements, recruiterList} = req.body;
 
   // Check if the user is authenticated
   if (!req.user) {
@@ -118,11 +119,16 @@ router.post('/job-postings', async (req, res) => {
       description,
       company: company,
       company_id: req.user.company_id,
+      recruiter_id: req.body.recruiterId,
+      job_id: uuid.v4(),
       salary,
       location,
       requirements: requirements.split(',').map(req => req.trim()),
-      postedBy: req.user._id, 
+      postedBy: req.user._id,
+      recruiterList, 
     });
+
+    console.log(jobPosting, "jobPosting")
 
     const savedJobPosting = await jobPosting.save();
     res.redirect('/job-postings');

@@ -97,7 +97,7 @@ router.get('/register', (req, res) => {
 
 router.post('/register', upload.single('resume'), async (req, res, next) => {
   try {
-    const { name, email, password, country, phoneNumber, role } = req.body;
+    const { name, email, password, country, phoneNumber, role, skills } = req.body;
     
     switch (role.toLowerCase()) {
       case 'admin':
@@ -111,7 +111,8 @@ router.post('/register', upload.single('resume'), async (req, res, next) => {
         await company.save();
         break;
       case 'recruiter':
-        const recruiter = new Recruiter({ name, email, password, country, phoneNumber, role });
+        let recruiter_id = uuid.v4();
+        const recruiter = new Recruiter({ name, email, password, country, phoneNumber, role, skills, recruiter_id });
         await recruiter.save();
         break;
       case 'candidate':

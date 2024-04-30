@@ -15,8 +15,15 @@ const jobPostingSchema = new mongoose.Schema({
   },
   company_id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
+  },
+  recruiter_id: {
+    type: String,
+    required: true
+  },
+  job_id: {
+    type: String,
+    required: true
   },
   salary: {
     type: Number,
@@ -38,11 +45,9 @@ const jobPostingSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  recruiter_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
-
+  recruiterList: {
+    type: String
+  },
 });
 
 const JobPosting = mongoose.model('JobPosting', jobPostingSchema);
