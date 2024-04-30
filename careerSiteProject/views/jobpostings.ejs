@@ -7,7 +7,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css" integrity="sha512-F7WyTLiiiPqvu2pGumDR15med0MDkUIo5VTVyyfECR5DZmCnDhti9q5VID02ItWjq6fvDfMaBaDl2J3WdL1uxA==" crossorigin="anonymous" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/styles/jobPostings.css">
+    <!-- <link rel="stylesheet" href="/styles/jobPostings.css"> -->
     <style>
         .container {
             display: flex;
@@ -139,63 +139,50 @@
                     <tr>
                         <% for (let j = i; j < i + 3 && j < jobPostings.length; j++) { %>
                             <td>
-                              
-                                <% if(user && user.role === 'recruiter') { %>
-                                    <% if(user.recruiter_id===jobPostings[j].recruiter_id) { %>
-                                        <div class="card mb-4" style="height: 100%;">
-                                            <div class="card-body">
-                                                <h5 class="card-title"><%= jobPostings[j].title %></h5>
-                                                <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
-                                                <p class="card-text"><%= jobPostings[j].description %></p>
-                                                <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
-                                                <p class="card-text">Location: <%= jobPostings[j].location %></p>
-                                                <ul class="list-group">
-                                                    <% jobPostings[j].requirements.forEach(requirement => { %>
-                                                        <li class="list-group-item"><%= requirement %></li>
-                                                    <% }); %>
-                                                </ul>
-                                                <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
-                                                <div class="job-buttons">
-                                                    <!-- Inside your HTML file -->
-                                                    <a href="/viewapplications/<%= jobPostings[j]._id %>" class="btn btn-primary btn-sm">View Applications</a>
-
-                                                </div>
-                                                
+                                <div class="card mb-4" style="height: 100%;">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%= jobPostings[j].title %></h5>
+                                        <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
+                                        <p class="card-text"><%= jobPostings[j].description %></p>
+                                        <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
+                                        <p class="card-text">Location: <%= jobPostings[j].location %></p>
+                                        <ul class="list-group">
+                                            <% jobPostings[j].requirements.forEach(requirement => { %>
+                                                <li class="list-group-item"><%= requirement %></li>
+                                            <% }); %>
+                                        </ul>
+                                         <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
+                                             <% if (user) { %>
+                                            <div class="job-buttons">
+                                                <% const appliedApplication = applications.find(application => JSON.stringify(application.job_id) == JSON.stringify(jobPostings[j]._id)); %>
+                                                <% if (user && user.role === 'jobseeker') { %>
+                                                  <% if (appliedApplication) { %>
+                                                      <% if (appliedApplication.application_status == "in progress") { %>
+                                                        <button class="apply-button">Applied</button>
+                                                      <% } else { %>
+                                                        <button class="apply-button">Closed</button>
+                                                      <% } %>
+                                                  <% } else { %>
+                                                    <form method="POST" action="/apply/<%= jobPostings[j]._id %>">
+                                                      <button class="apply-button">Apply</button>
+                                                    </form>
+                                                    <% } %>
+                                                <% } else if (user.role === 'recruiter') { %>
+                                                      <div class="job-buttons">
+                                                        <!-- Inside your HTML file -->
+                                                        <a href="/viewapplications/<%= jobPostings[j]._id %>" class="btn btn-primary btn-sm">View Applications</a>
+                                                    </div>
+                                                <% } %>
+                                             </div>
+                                             <% } else if (user.role == 'company') { %>
+                                            <div class="job-buttons">
+                                              <a class="edit-button" href="/job-posting-form/<%= jobPostings[j].id %>">Edit</a>
+                                              <form id="delete-form" onsubmit="deleteJobPosting('<%= jobPostings[j].id %>'); return false;">
+                                                <button class="delete-button" type="submit">Delete</button>
+                                              </form>
                                             </div>
-                                        </div>
-                                    <% } %>
-                                <% } else { %>
-                                    <div class="card mb-4" style="height: 100%;">
-                                        <div class="card-body">
-                                            <h5 class="card-title"><%= jobPostings[j].title %></h5>
-                                            <h6 class="card-subtitle mb-2 text-muted"><%= jobPostings[j].company %></h6>
-                                            <p class="card-text"><%= jobPostings[j].description %></p>
-                                            <p class="card-text">Salary: $<%= jobPostings[j].salary %></p>
-                                            <p class="card-text">Location: <%= jobPostings[j].location %></p>
-                                            <ul class="list-group">
-                                                <% jobPostings[j].requirements.forEach(requirement => { %>
-                                                    <li class="list-group-item"><%= requirement %></li>
-                                                <% }); %>
-                                            </ul>
-                                            <p class="card-text"><small class="text-muted">Posted on <%= jobPostings[j].postedAt.toDateString() %></small></p>
-                                            <% if (user && user.role === 'jobseeker') { %>
-                                                <div class="job-buttons">
-                                                  <!-- Inside your HTML file -->
-                                                <button class="apply-button" onclick="applyJob('<%= jobPostings[j]._id %>')">Apply</button>
-    
-                                                </div>
-                                              <% } else if (user && user.role != 'recruiter') { %>
-                                                <div class="job-buttons">
-                                                  <a class="edit-button" href="/job-posting-form/<%= jobPostings[j].id %>">Edit</a>
-                                                  <form id="delete-form" onsubmit="deleteJobPosting('<%= jobPostings[j].id %>'); return false;">
-                                                    <button class="delete-button" type="submit">Delete</button>
-                                                  </form>
-                                                </div>
-                                              <% } %>
-                                        </div>
+                                            <% } %>
                                     </div>
-                                <% } %>
-                               
                             </td>
                         <% } %>
                     </tr>
@@ -232,27 +219,6 @@
             }
           }
         }
-
-        // In your JavaScript script (included in your HTML)
-async function applyJob(jobId) {
-  try {
-    const response = await fetch(`/apply/${jobId}`, {
-      method: 'POST',
-    });
-
-    console.log(response);
-
-    if (response.status === 200) {
-      alert('Application successful!');
-    } else {
-      alert('An error occurred while applying for the job posting.');
-    }
-  } catch (err) {
-    console.error('Error:', err);
-    alert('An error occurred while applying for the job posting.');
-  }
-}
-
       </script>
 </body>
 </html>

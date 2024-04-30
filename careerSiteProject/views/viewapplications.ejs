@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Applications</title>
-    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css">
     <style>
         body {
@@ -42,60 +41,37 @@
                 No applications found.
             </div>
         <% } else { %>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Select</th>
-                            <th>Application ID</th>
-                            <th>Jobseeker</th>
-                            <th>Email</th>
-                            <th>Contact</th>
-                            <!-- Add more table headers as needed -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% applications.forEach(application => { %>
+            <form id="applicationSelectionForm" method="POST" action="/applications/<%= jobId %>">  <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
                             <tr>
-                                <td>
-                                    <!-- Add radio button -->
-                                    <input type="radio" name="selectedApplication" value="<%= application._id %>">
-                                </td>
-                                <td><%= application._id %></td>
-                                <td><%= application.jobseeker_id.name %></td>
-                                <td><%= application.jobseeker_id.email %></td>
-                                <td><%= application.jobseeker_id.phoneNumber %></td>
-                                <!-- Add more table cells to display other application details -->
-                            </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
+                                <th>Select</th>
+                                <th>Application ID</th>
+                                <th>Jobseeker</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                            <% applications.forEach(application => { %>
+                                <tr>
+                                    <td>
+                                        <input type="radio" name="selectedApplication" value="<%= application._id %>">
+                                    </td>
+                                    <td><%= application._id %></td>
+                                    <td><%= application.jobseeker_id.name %></td>
+                                    <td><%= application.jobseeker_id.email %></td>
+                                    <td><%= application.jobseeker_id.phoneNumber %></td>
+                                    </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn btn-primary">Select Candidate</button>
+            </form>
         <% } %>
     </div>
-    <div class="container">
-        <button id="viewApplicationButton" class="btn btn-primary" onclick="viewSelectedApplication()">View Selected Application</button>
-    </div>
 
-    <!-- Include Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // JavaScript function to handle button click event
-        function viewSelectedApplication() {
-            console.log("Button clicked!"); // Check if the button click event is triggered
-            // Get the selected application ID
-            const selectedApplication = document.querySelector('input[name="selectedApplication"]:checked');
-            if (selectedApplication) {
-                console.log(selectedApplication); // Check if the selected radio button is found
-                const selectedApplicationId = selectedApplication.value;
-                // Example action: Log the selected application ID
-                console.log("Selected Application ID:", selectedApplicationId);
-                // Perform further actions based on the selected application ID
-                // For example, display details or navigate to another page
-            } else {
-                console.log("No application selected.");
-            }
-        }
-    </script>
 </body>
 </html>
